@@ -1,0 +1,192 @@
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    body {
+        font-family: 'Inter', sans-serif; /* Industry standard clean font */
+        background-attachment: fixed;
+    }
+
+    .main-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 80px 20px;
+        min-height: 100vh;
+    }
+
+    /* Solid Clean White Card */
+    .product-container {
+        background: #ffffff;
+        color: #111827; /* Dark charcoal text for perfect readability */
+        display: flex;
+        max-width: 1100px;
+        width: 100%;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Left Side: Solid Image */
+    .image-section {
+        flex: 1;
+        background-color: #f9fafb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+        border-right: 1px solid #f3f4f6;
+    }
+
+    .image-section img {
+        width: 100%;
+        height: 450px;
+        object-fit: contain; /* Keeps image looking professional, not stretched */
+        border-radius: 12px;
+    }
+
+    /* Right Side: High-Contrast Info */
+    .details-section {
+        flex: 1;
+        padding: 50px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .category-label {
+        color: #4f46e5; /* Professional Indigo */
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 8px;
+    }
+
+    .product-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #111827;
+        line-height: 1.2;
+        margin-bottom: 16px;
+    }
+
+    .price-container {
+        display: flex;
+        align-items: baseline;
+        gap: 4px;
+        margin-bottom: 24px;
+    }
+
+    .price-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #059669; /* Trustworthy Emerald Green */
+    }
+
+    .price-period {
+        color: #6b7280;
+        font-size: 1rem;
+    }
+
+    .product-desc {
+        color: #4b5563; /* Gray-600 */
+        font-size: 1.1rem;
+        line-height: 1.7;
+        margin-bottom: 32px;
+        border-top: 1px solid #f3f4f6;
+        padding-top: 24px;
+    }
+
+    .specs-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 40px;
+    }
+
+    .spec-box {
+        background: #f9fafb;
+        padding: 16px;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .spec-label {
+        font-size: 0.75rem;
+        color: #6b7280;
+        text-transform: uppercase;
+        font-weight: 600;
+        margin-bottom: 4px;
+        display: block;
+    }
+
+    .spec-value {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    /* Call to Action */
+    .rent-button {
+        background: #111827; /* Dark button is very "in" right now */
+        color: white;
+        text-align: center;
+        padding: 20px;
+        border-radius: 14px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        text-decoration: none;
+        transition: background 0.2s ease;
+    }
+
+    .rent-button:hover {
+        background: #374151;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 850px) {
+        .product-container { flex-direction: column; }
+        .image-section { padding: 20px; }
+        .image-section img { height: 300px; }
+    }
+</style>
+
+<div class="main-wrapper">
+    <div class="product-container">
+        <div class="image-section">
+            <img src="/asset-images/{{product._id}}.jpg" alt="{{product.Name}}">
+        </div>
+
+        <div class="details-section">
+            <span class="category-label">{{product.Category}}</span>
+            <h1 class="product-title">{{product.Name}}</h1>
+            
+            <div class="price-container">
+                <span class="price-value">₹{{product.Price}}</span>
+                <span class="price-period">/ day</span>
+            </div>
+
+            <p class="product-desc">{{product.Description}}</p>
+
+            <div class="specs-grid">
+                <div class="spec-box">
+                    <span class="spec-label">Security Deposit</span>
+                    <span class="spec-value">₹{{product.Deposit}}</span>
+                </div>
+                <div class="spec-box">
+                    <span class="spec-label">Location</span>
+                    <span class="spec-value">{{product.Location}}</span>
+                </div>
+                <div class="spec-box">
+                    <span class="spec-label">Availability</span>
+                    <span class="spec-value" style="color: #059669;">Instantly Available</span>
+                </div>
+                <div class="spec-box">
+                    <span class="spec-label">Listed on</span>
+                    <span class="spec-value">{{product.date}}</span>
+                </div>
+            </div>
+        
+            <a href="/rent-request/{{product._id}}" class="rent-button">Confirm Rental Request</a>
+        </div>
+    </div>
+</div>

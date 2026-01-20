@@ -1,0 +1,22 @@
+<div class="main-wrapper" style="flex-direction: column; align-items: flex-start; max-width: 1000px; margin: auto;">
+    <h1 style="color: white; margin-bottom: 30px; font-weight: 800;">Owner Dashboard</h1>
+
+    {{#each requests}}
+    <div style="background: white; width: 100%; border-radius: 15px; display: flex; padding: 25px; margin-bottom: 20px; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <div style="flex: 1;">
+            <h3 style="color: #111827;">Someone wants to rent: {{this.itemDetails.Name}}</h3>
+            <p style="color: #4b5563;">Requested on: {{this.date}}</p>
+            <p style="color: #059669; font-weight: 700;">Earnings: ₹{{this.price}}</p>
+        </div>
+
+        {{#if (eq this.status 'pending')}}
+        <div style="display: flex; gap: 10px;">
+            <a href="/approve-request/{{this._id}}" style="background: #059669; color: white; padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: 600;">Approve</a>
+            <a href="/reject-request/{{this._id}}" style="background: #ef4444; color: white; padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: 600;">Reject</a>
+        </div>
+        {{else}}
+        <div style="font-weight: 800; color: #111827; text-transform: uppercase;">{{this.status}}</div>
+        {{/if}}
+    </div>
+    {{/each}}
+</div>
