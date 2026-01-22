@@ -103,7 +103,30 @@ module.exports = {
                 resolve()
             })
         })
+    },
+    updateProduct:(productId, productDetails)=>{
+        return new Promise((resolve, reject)=>{
+            db.get().collection('assets').updateOne(
+                {_id: new ObjectId(productId)},
+                {
+                    $set:{
+                        Name: productDetails.Name,
+                        Description: productDetails.Description,
+                        Price: productDetails.Price,
+                        Category: productDetails.Category,
+                        subCategory: productDetails.subCategory,
+                        Deposit: productDetails.Deposit,
+                        Location: productDetails.Location
+
+                    }
+                }
+            ).then((response)=>{
+                resolve()
+            })
+        })
     }
+
+
 
 
 }

@@ -5,6 +5,7 @@ const db = require('./config/connection');
 const { engine } = require('express-handlebars');
 const createError = require('http-errors');
 const session  = require('express-session');
+const fileUpload = require('express-fileupload');
 
 const app = express();
 
@@ -43,6 +44,9 @@ app.use(session({
     cookie: { maxAge: 600000  } // 10 minutes
 })
 );
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(fileUpload()); // Ensure this is installed via npm i express-fileupload
 
 // 3. Routes
 var userRouter = require('./routes/user');

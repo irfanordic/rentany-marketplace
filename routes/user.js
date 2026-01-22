@@ -128,6 +128,34 @@ router.get('/reject-request/:id', verifyLogin, async(req, res)=>{
 })
 
 
+router.get('/edit-product/:id', verifyLogin, async(req, res)=>{
+    let product = await assetHelpers.getProductDetails(req.params.id)
+    res.render('user/edit-product', {user: req.session.user, product})
+})
+
+
+router.post('/edit-product/:id', verifyLogin, (req, res)=>{
+   let productId = req.params.id; // Define the ID clearly
+   
+       assetHelpers.updateProduct(productId, req.body).then(() => {
+           // 1. Handle the image update if a new one exists
+           if (req.files && req.files.Image) {
+               let image = req.files.Image;
+               image.mv('./public/asset-images/' + productId + '.jpg', (err) => {
+                   if (!err) {
+                       res.redirect('/owner-dashboard');
+                   } else {
+                       console.log("Image upload error:", err);
+                       res.redirect('/owner-dashboard');
+                   }
+               });
+           } else {
+               // 2. No new image, just redirect
+               res.redirect('/owner-dashboard');
+           }
+       });
+   });
+
 
 
 
