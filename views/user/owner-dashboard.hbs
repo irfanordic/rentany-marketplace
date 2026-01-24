@@ -185,6 +185,41 @@
             border-radius: 24px;
             border: 2px dashed rgba(255, 255, 255, 0.1);
         }
+
+
+        /* Styling for the new Delete button */
+        .delete-item-btn {
+            position: absolute;
+            top: 24px;
+            /* We push it further left than the Manage button */
+            right: 145px; 
+            background: transparent;
+            color: var(--accent-danger);
+            text-decoration: none;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 6px 12px;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 8px;
+            transition: 0.3s;
+            margin-right: 20px;
+        }
+        
+        .delete-item-btn:hover {
+            background: var(--accent-danger);
+            color: white;
+            border-color: var(--accent-danger);
+        }
+        
+        /* Ensure responsiveness: on small screens, stack them or hide the label */
+        @media (max-width: 600px) {
+            .delete-item-btn {
+                right: 32px;
+                top: 60px; /* Moves below the Manage button on mobile */
+            }
+        }
     </style>
 </head>
 <body>
@@ -194,7 +229,14 @@
 
     {{#each requests}}
     <div class="request-card">
+
+        <a href="/delete-product/{{this.item}}" 
+               onclick="return confirm('Are you sure you want to delete {{this.itemDetails.Name}}?')" 
+               class="delete-item-btn">
+               Delete Asset
+            </a>
         <a href="/edit-product/{{this.item}}" class="edit-item-btn">Manage Asset</a>
+     
 
         <div class="info-section">
             <span class="badge-new">Rental Request</span>

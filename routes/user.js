@@ -157,6 +157,14 @@ router.post('/edit-product/:id', verifyLogin, (req, res)=>{
    });
 
 
+   router.get('/delete-product/:id', verifyLogin, (req, res)=>{
+    let productId = req.params.id
+    assetHelpers.deleteProduct(productId, req.session.user._id).then(()=>{
+        res.redirect('/owner-dashboard')
+    })
+   })
+
+
 
 
 

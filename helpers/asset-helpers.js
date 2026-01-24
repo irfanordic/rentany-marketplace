@@ -124,6 +124,26 @@ module.exports = {
                 resolve()
             })
         })
+
+        
+    },
+
+
+    deleteProduct:(productId, userId)=>{
+        return new Promise(async(resolve, reject)=>{
+            db.get().collection('assets').deleteOne(
+                {   _id: new ObjectId(productId),
+                    ownerId: userId
+                }
+            ).then((response)=>{
+                try{
+                    FileSystem.unlinkSync('./public/asset-images/' + productId + '.jpg')
+                } catch(err){
+                    console.log('Image not found, skipping deletion.');
+                }
+                resolve(response)
+            })
+        })
     }
 
 
