@@ -146,7 +146,18 @@ module.exports = {
         })
     },
 
+  searchProducts:(query)=>{
+    return new Promise(async(resolve, reject)=>{
+        let results = await db.get().collection('assets').find({
+            $or: [
+                            { Name: { $regex: query, $options: 'i' } }, // 'i' means case-insensitive
+                            { subCategory: { $regex: query, $options: 'i' } }
+                        ]
+        }).toArray()
 
+        resolve(results)
+    })
+  }
     
 
 

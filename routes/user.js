@@ -170,6 +170,17 @@ router.post('/edit-product/:id', verifyLogin, (req, res)=>{
     res.render('user/profile', {user:req.session.user, stats})
    })
 
+   router.get('/products', async(req, res)=>{
+    let user  = req.session.user
+    let products =  await assetHelpers.getAllAssets()
+    res.render('user/products', {user, products})
+   })
+
+   router.get('/search', async(req, res)=>{
+    let query = req.query.q
+    let results = await assetHelpers.searchProducts(query)
+    res.json(results)
+   })
 
 
 

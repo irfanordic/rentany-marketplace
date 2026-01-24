@@ -1,0 +1,201 @@
+<style>
+    /* 1. Global Section & Title */
+    .asset-section {
+        padding: 80px 5%;
+        background: #f8fafc; /* Standard Slate-White background */
+    }
+    
+    .section-title {
+        font-size: 2.5rem;
+        margin-bottom: 50px;
+        color: #0f172a; /* Deep Navy Heading */
+        text-align: center;
+        font-weight: 800;
+        text-shadow: none;
+    }
+    
+    /* 2. The Search Bar - Unified with SaaS Palette */
+    .search-input-field {
+        width: 100%; 
+        padding: 18px 25px; 
+        border-radius: 20px; 
+        border: 1px solid #e2e8f0; /* Soft border */
+        background: #ffffff; /* White background */
+        color: #0f172a; /* Navy text */
+        font-size: 1.1rem; 
+        outline: none; 
+        transition: 0.3s;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .search-input-field:focus {
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+    }
+    
+    /* 3. Original Grid & Card Layout */
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .product-card {
+        background: #ffffff; /* Pure White Card */
+        border-radius: 25px;
+        border: 1px solid #e2e8f0; 
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    
+    .product-card:hover {
+        transform: translateY(-12px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        border-color: #4f46e5; 
+    }
+    
+    .img-container {
+        position: relative;
+        height: 220px;
+        width: 100%;
+    }
+    
+    .product-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: #0f172a; 
+        color: #fff;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .product-info {
+        padding: 25px;
+    }
+    
+    .product-info h3 {
+        font-size: 1.4rem;
+        margin-bottom: 10px;
+        color: #1e293b; /* Dark Slate Title */
+        font-weight: 700;
+    }
+    
+    .price-tag {
+        display: flex;
+        align-items: baseline;
+        gap: 2px;
+        margin-bottom: 20px;
+    }
+    
+    .currency { font-size: 1rem; color: #4f46e5; font-weight: 700; } 
+    .amount { font-size: 1.8rem; font-weight: 800; color: #0f172a; } 
+    .per-day { font-size: 0.9rem; color: #64748b; } 
+    
+    .btn-rent {
+        display: block;
+        width: 100%;
+        padding: 14px;
+        background: #4f46e5; 
+        color: white;
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: bold;
+        text-align: center;
+        transition: 0.3s;
+    }
+    
+    .btn-rent:hover {
+        background: #4338ca; 
+        letter-spacing: 1px;
+    }
+</style>
+
+<section id="explore" class="asset-section">
+    <div class="search-container" style="max-width: 600px; margin: 0 auto 60px auto; padding: 0 20px;">
+        <div style="position: relative;">
+            <input type="text" id="searchInput" class="search-input-field" placeholder="Search for tools, electronics, camping gear...">
+            <span style="position: absolute; right: 25px; top: 18px; opacity: 0.5;">🔍</span>
+        </div>
+    </div>
+
+    <h2 class="section-title">Available in Your Community</h2>
+
+    <div class="product-grid">
+        {{#each products}}
+        <div class="product-card">
+            <div class="img-container">
+                <img src="/asset-images/{{this._id}}.jpg" alt="{{this.Name}}" class="product-img">
+                <span class="badge">{{this.Category}}</span>
+            </div>
+            
+            <div class="product-info">
+                <h3>{{this.Name}}</h3>
+                <div class="price-tag">
+                    <span class="currency">₹</span>
+                    <span class="amount">{{this.Price}}</span>
+                    <span class="per-day">/day</span>
+                </div>
+                <a href="/product-details/{{this._id}}" class="btn-rent">Rent Now</a>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</section>
+
+<script>
+    let searchInput = document.getElementById('searchInput');
+    let productGrid = document.querySelector('.product-grid');
+    searchInput.addEventListener('input', (e)=>{
+      let query = e.target.value
+
+      if(query.length > 0){
+        fetch(`/search?q=${query}`)
+        .then(res=> res.json())
+        .then(data =>{
+            updateUI(data)
+        })
+      }
+        
+    })
+
+    function updateUI(products){
+        productGrid.innerHTML = ''; // Clear existing cards
+                if (products.length === 0) {
+                    productGrid.innerHTML = '<p style="color: white; text-align: center; width: 100%;">No items found matching your search.</p>';
+                    return;
+                }
+
+                products.forEach(item =>{
+                   productGrid.innerHTML += `<div class="product-card">
+                                   <div class="img-container">
+                                       <img src="/asset-images/${item._id}.jpg" alt="${item.Name}" class="product-img">
+                                       <span class="badge">${item.Category}</span>
+                                   </div>
+                                   <div class="product-info">
+                                       <h3>${item.Name}</h3>
+                                       <div class="price-tag">
+                                           <span class="currency">₹</span>
+                                           <span class="amount">${item.Price}</span>
+                                           <span class="per-day">/day</span>
+                                       </div>
+                                       <a href="/product-details/${item._id}" class="btn-rent">Rent Now</a>
+                                   </div>
+                               </div>
+                               `;
+                })
+    }
+</script>
