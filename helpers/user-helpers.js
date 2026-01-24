@@ -1,3 +1,4 @@
+const { ObjectId } = require('mongodb');
 const db   = require('../config/connection');
 const bcrypt =  require('bcrypt');
 
@@ -37,6 +38,16 @@ module.exports = {
                 resolve({status: false})
             }
 
+        })
+    },
+
+    getUserDetails:(userId)=>{
+        return new Promise(async(resolve, reject)=>{
+            let stats = {}
+
+             stats.listed = await db.get().collection('assets').countDocuments({ownerId: userId})
+             stats.rented = await db.get().collection('rentals').countDocuments({user: new ObjectId(userId)})
+            resolve(stats)
         })
     }
 

@@ -165,6 +165,12 @@ router.post('/edit-product/:id', verifyLogin, (req, res)=>{
    })
 
 
+   router.get('/profile', verifyLogin, async(req, res)=>{
+    let stats = await userHelpers.getUserDetails(req.session.user._id)
+    res.render('user/profile', {user:req.session.user, stats})
+   })
+
+
 
 
 
