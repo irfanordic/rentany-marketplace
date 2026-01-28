@@ -3,8 +3,65 @@
   <head>
     <title>Circular Community</title>
     <style></style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </head>
   <body>
     {{{body}}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    
+    <script>
+        // Initialize socket
+        const socket = io();
+    
+        // 1. Identify User (Using a cleaner check to avoid Parse Errors)
+        const currentUserId = "{{user._id}}"; 
+        
+        if (currentUserId && currentUserId !== "") {
+            socket.emit('join', currentUserId);
+        }
+    
+        // 2. Listen for Incoming Pings
+        socket.on('get-notification', (data) => {
+          const Toast = Swal.mixin({
+                      toast: true,
+                      position: 'top-end',
+                      showConfirmButton: false,
+                      timer: 4000,
+                      timerProgressBar: true,
+                      background: '#4f46e5', // Indigo
+                      color: '#ffffff'
+                  });
+                  Toast.fire({
+                      icon: 'info',
+                      title: 'New Rental Request!',
+                      text: data.message
+                  });
+        });
+    
+        // 3. Function to trigger the notification
+        function notifyOwner(ownerId, productName) {
+            socket.emit('send-notification', {
+                ownerId: ownerId,
+                productName: productName,
+                userName: "{{user.Name}}"
+            });
+        }
+    
+        socket.on('display-response', (data) => {
+         const isApproved = data.status === 'approved';
+                 
+                 Swal.fire({
+                     title: isApproved ? 'Accepted!' : 'Declined',
+                     text: data.message,
+                     icon: isApproved ? 'success' : 'error',
+                     confirmButtonColor: '#6366f1',
+                     background: '#ffffff',
+                     borderRadius: '20px'
+                 });
+        })
+    
+       
+    </script>
      </body>
 </html>

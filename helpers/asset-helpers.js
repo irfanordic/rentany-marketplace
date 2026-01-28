@@ -87,8 +87,27 @@ module.exports = {
                         as: 'itemDetails'
                     }
                 },
-                { $unwind: '$itemDetails' }
-            ]).toArray()
+                 {
+                          $lookup: {
+                              from: 'user',
+                              localField: 'user', 
+                              foreignField: '_id',
+                              as: 'userDetails'
+                          }
+                      },
+                   {
+                                       $project: {
+                                           item: 1,
+                                           user: 1, 
+                                           owner: 1,
+                                           status: 1,
+                                           date: 1,
+                                           price: 1,
+                                           itemDetails: { $arrayElemAt: ['$itemDetails', 0] },
+                                           userDetails: { $arrayElemAt: ['$userDetails', 0] }
+                                       }
+                                   }
+                               ]).toArray();
             resolve(requests)
         })
     },

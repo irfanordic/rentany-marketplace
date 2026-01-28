@@ -79,17 +79,31 @@ router.get('/add-asset', verifyLogin, (req, res)=>{
     res.render('user/add-asset', {user: req.session.user})
 })
 
-router.post('/add-asset', verifyLogin, upload.single('Image'), (req, res)=>{
-assetHelpers.addAsset(req.body, req.session.user._id).then((id)=>{
-    if (req.file){
-         const fs  = require('fs');
-            fs.renameSync(req.file.path, 'public/asset-images/' + id + '.jpg');
-            console.log('File uploaded and renamed successfully');
-}   
-    res.redirect('/')
-
-})
-})
+router.post('/add-asset', verifyLogin, (req, res) => {
+    // 1. Add asset to DB
+    assetHelpers.addAsset(req.body, req.session.user._id).then((id) => {
+        
+        // 2. Check if file exists (using express-fileupload style)
+        if (req.files && req.files.Image) {
+            let image = req.files.Image;
+            
+            // 3. Move the file
+            image.mv('./public/asset-images/' + id + '.jpg', (err) => {
+                if (!err) {
+                    res.redirect('/');
+                } else {
+                    console.log("Image move error:", err);
+                    res.redirect('/'); // Still redirect so the user isn't stuck
+                }
+            });
+        } else {
+            res.redirect('/');
+        }
+    }).catch((err) => {
+        console.log("DB Error:", err);
+        res.status(500).send("Database error");
+    });
+});
 
 router.get('/product-details/:id', async(req,res)=>{
     let user =req.session.user

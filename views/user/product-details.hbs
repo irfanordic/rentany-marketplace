@@ -186,7 +186,10 @@
                 </div>
             </div>
         
-            <a href="/rent-request/{{product._id}}" class="rent-button">Confirm Rental Request</a>
+            <a href="/rent-request/{{product._id}}"
+             class="rent-button"
+             onclick="notifyOwner('{{product.ownerId}}', '{{product.Name}}')"
+             >Confirm Rental Request</a>
         </div>
     </div>
 </div>

@@ -248,8 +248,18 @@
 
         <div class="action-group">
             {{#if (eq this.status 'pending')}}
-                <a href="/reject-request/{{this._id}}" class="btn-reject">Decline</a>
-                <a href="/approve-request/{{this._id}}" class="btn-approve">Approve Request</a>
+
+
+                <a href="/reject-request/{{this._id}}"
+                 class="btn-reject"
+                    onclick="handleResponse(event, '{{this.user}}', '{{this.itemDetails.Name}}', 'rejected', this.href)"
+                 >Decline</a>
+
+
+                <a href="/approve-request/{{this._id}}" 
+                class="btn-approve"
+                onclick="handleResponse(event, '{{this.user}}', '{{this.itemDetails.Name}}', 'approved', this.href)"
+                >Approve Request</a>
             {{else}}
                 <div class="status-final">{{this.status}}</div>
             {{/if}}
@@ -264,3 +274,20 @@
 
 </body>
 </html>
+
+<script>
+
+    function handleResponse(event, borrowerId, productName, status, url){
+        event.preventDefault()
+        console.log("SENDING TO SERVER -> BorrowerID:", borrowerId)
+        socket.emit('respond-to-request',{
+            borrowerId: borrowerId, 
+            productName: productName,
+            status: status
+        })
+
+        setTimeout(() => {
+                    window.location.href = url;
+                }, 100)
+    }
+</script>

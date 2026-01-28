@@ -19,7 +19,8 @@
     "hbs": "^4.2.0",
     "http-errors": "^2.0.1",
     "mongodb": "^7.0.0",
-    "multer": "^2.0.2"
+    "multer": "^2.0.2",
+    "socket.io": "^4.8.3"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"
