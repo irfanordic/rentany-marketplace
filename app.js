@@ -8,6 +8,7 @@ const session  = require('express-session');
 const fileUpload = require('express-fileupload');
 const http = require('http')
 const { Server}  = require("socket.io")
+const userHelpers = require('./helpers/user-helpers');
 
 
 const app = express();
@@ -20,47 +21,52 @@ let activeUsers = {}
 
 io.on('connection', (socket)=>{
     socket.on('join', (userId)=>{
-        activeUsers[userId] = socket.id
+        socket.join(userId)
         console.log('user Live :', userId)
     })
 
 
     socket.on('send-notification' , (data)=>{
-        const ownerSocketId = activeUsers[data.ownerId]
-        if(ownerSocketId){
-            io.to(ownerSocketId).emit('get-notification', {
+      
+        
+            io.to(data.ownerId).emit('get-notification', {
                 message: `Incoming Request for ${data.productName}!`
             })
-        }
+        
     })
 
     socket.on('respond-to-request', (data)=>{
-        console.log("1. Server received response for:", data.borrowerId);
-        const borrowerSocketId  = activeUsers[data.borrowerId]
-        console.log("2. Looking for borrower socket. Found:", borrowerSocketId);
-
-        if(borrowerSocketId){
-            console.log("3. Sending 'display-response' to borrower!");
-            io.to(borrowerSocketId).emit('display-response', {
+       
+        
+            io.to(data.borrowerId).emit('display-response', {
                 message: `Your request for ${data.productName} has been ${data.status}!`,
                 status: data.status
             })
-        }else {
-                console.log("ERROR: Borrower is not online or socket ID not found in activeUsers.");
-            }
+        
     })
+
+    socket.on('send-chat-message', async(data)=>{
+       await userHelpers.saveMessage(data)
+
+        
+
+        
+            io.to(data.recieverId).emit('recieve-chat-message', {
+                message: data.message,
+                senderId: data.senderId,
+                item: data.item
+            })
+        
+    })
+
 
     socket.on('disconnect', ()=>{
-        for(let userId in activeUsers){
-            if(activeUsers[userId] === socket.id){
-               delete activeUsers[userId]
-                console.log('user Disconnected :', userId)
-                break
-
-            }
-        }
+       if (socket.userId) {
+                   console.log('User disconnected from room:', socket.userId);
+               }
+           });
     })
-})
+
 
 
 
@@ -83,8 +89,13 @@ app.engine('hbs', engine({
           },
           eq: function (v1, v2) {
                       return v1 === v2;
-                  }
-  },
+                  },
+                // ADD THIS HELPER HERE!
+                    toString: function (val) {
+                      return val ? val.toString() : "";
+                    }
+                
+                },
  
   // ... rest of your options
 }));
@@ -97,7 +108,7 @@ app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 600000  } // 10 minutes
+    cookie: { maxAge: 6000000  } 
 })
 );
 app.use(express.json());

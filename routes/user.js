@@ -196,7 +196,28 @@ router.post('/edit-product/:id', verifyLogin, (req, res)=>{
     res.json(results)
    })
 
+   router.get('/chat', verifyLogin, async(req, res)=>{
+    let user = req.session.user
+    let chatWithId = req.query.with
+    let itemName = req.query.item
+      try{
+         let inbox = await userHelpers.getConversations(user._id)
+         let messages = []
+           if(chatWithId && itemName){
+            messages = await userHelpers.getChatHistory(user._id, chatWithId, itemName)
+           }
+           res.render('user/chat', {user, chatWithId, itemName, layout: 'layout', inbox, messages})
 
+      }catch(err){
+        console.log('Error fetching chat data:', err);
+       res.redirect('/')
+      }
+    
+
+
+   
+
+   })
 
 
 

@@ -303,35 +303,7 @@
 </head>
 <body>
 
-    <nav>
-        <div class="logo">RENTANY</div>
-        <div class="nav-links">
-            <a href="/">Home</a>
-            <a href="/products">Products</a>
-            <a href="/add-asset" class="btn-add">+ List Item</a>
-            
-            <div class="user-profile">
-                <div class="user-icon">
-                    {{#if user}}
-                     {{substring user.Name 0 1}}
-                    {{else}}
-                        ?
-                    {{/if}}
-                </div>
-                <div class="user-nav-group">
-                        {{#if user}}
-                            <span class="user-name">{{user.Name}}</span>
-                            <div class="nav-sub-links">
-                                <a href="/my-rentals">My Rentals</a>
-                                <a href="/owner-dashboard">Lender Hub</a>
-                                <a href="/logout" class="logout-text">Logout</a>
-                            </div>
-                        {{else}}
-                            <a href="/login" class="login-btn">Login</a>
-                        {{/if}}
-            </div>
-        </div>
-    </nav><main class="hero">
+    <main class="hero">
         <h1>Welcome, {{#if user}}{{user.Name}}{{else}}to the Community{{/if}}</h1>
         <p>Borrow what you need, lend what you don't. Build a better circle.</p>
         

@@ -49,7 +49,67 @@ module.exports = {
              stats.rented = await db.get().collection('rentals').countDocuments({user: new ObjectId(userId)})
             resolve(stats)
         })
-    }
+    },
+
+    saveMessage:(data)=>{
+        return new Promise(async(resolve, reject)=>{
+
+
+            let participants = [new ObjectId(data.senderId), new ObjectId(data.recieverId)].sort()
+
+                    let msgObj = {
+                        senderId: new ObjectId(data.senderId),
+                        message: data.message,
+                        timeStamp: new Date(),
+                        
+                    }
+            
+                  await db.get().collection('conversations').updateOne(
+                    { participants: participants, itemName: data.item},
+                    {
+                        $set:{ lastMessage: data.message, updatedAt: new Date()},
+                        $push: { messages: msgObj}
+                    },
+                    { upsert: true}
+                  )
+
+                  resolve()
+
+        })
+        },
+
+        getConversations:(userId)=>{
+            return new Promise(async(resolve, reject)=>{
+                let conversations =  await db.get().collection('conversations').find({
+                    participants: {$in: [new ObjectId(userId)]}
+                }).sort({ updatedAt: -1}).toArray() 
+
+               conversations.forEach(convo=>{
+                  convo.partnerId = convo.participants.find(p=> p.toString() !== userId.toString())
+               })
+
+                  resolve(conversations)   
+                 })
+        },
+
+        getChatHistory:(myId, partnerId, itemName)=>{
+            return new Promise(async(resolve, reject)=>{
+               if(!partnerId || !itemName) resolve([])
+
+                let participants = [new ObjectId(myId), new ObjectId(partnerId)].sort()
+
+                let conversation = await db.get().collection('conversations').findOne({
+                    participants: participants,
+                    itemName: itemName
+                })
+
+                resolve(conversation? conversation.messages : [])
+            })
+        }
+
+
+
+
 
     
 

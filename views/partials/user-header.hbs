@@ -1,0 +1,150 @@
+<style>
+       nav {
+           width: 100%;
+           position: fixed; /* Changed from sticky to fixed for better stability */
+           top: 0;
+           left: 0;
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+           padding: 1rem 5%;
+           background: rgba(255, 255, 255, 0.1);
+           backdrop-filter: blur(10px);
+           z-index: 2000; /* Higher than everything else */
+       }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.7;
+        }
+        .btn-add {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 20px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            font-weight: bold;
+            font-size: 0.8rem !important;
+        }
+        .btn-add:hover {
+            background: white !important;
+            color: #e73c7e !important;
+            opacity: 1 !important;
+        }
+
+        /* 3. Account Profile Section */
+
+        .user-nav-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-left: 10px;
+        }
+        
+        .user-name {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .nav-sub-links {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .nav-sub-links a {
+            font-size: 0.7rem !important;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            text-decoration: none;
+            color: white;
+            transition: 0.3s;
+        }
+        
+        .nav-sub-links a:hover {
+            opacity: 1;
+            color: #23d5ab; /* That nice green color you used */
+        }
+        
+        .logout-text {
+            color: #ef4444 !important; /* Red for logout */
+        }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .user-icon {
+            width: 30px;
+            height: 30px;
+            background: #fff;
+            color: #e73c7e;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+</style>
+
+<nav>
+    <div class="logo">RENTANY</div>
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/products">Products</a>
+        
+        {{#if user}}
+        <a href="/chat" style="position: relative;">
+            Messages
+            <span id="nav-msg-dot" style="display:none; position:absolute; top:-5px; right:-10px; width:10px; height:10px; background:red; border-radius:50%; border:2px solid white;"></span>
+        </a>
+        <a href="/add-asset" class="btn-add">+ List Item</a>
+        {{/if}}
+
+        <div class="user-profile">
+            <div class="user-icon">
+                {{#if user}}
+                    {{substring user.Name 0 1}}
+                {{else}}
+                    ?
+                {{/if}}
+            </div>
+            <div class="user-nav-group">
+                {{#if user}}
+                    <span class="user-name">{{user.Name}}</span>
+                    <div class="nav-sub-links">
+                        <a href="/my-rentals">My Rentals</a>
+                        <a href="/owner-dashboard">Lender Hub</a>
+                        <a href="/logout" class="logout-text">Logout</a>
+                    </div>
+                {{else}}
+                    <a href="/login" class="login-btn">Login</a>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</nav>

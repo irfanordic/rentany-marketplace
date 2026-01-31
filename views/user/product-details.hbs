@@ -191,5 +191,39 @@
              onclick="notifyOwner('{{product.ownerId}}', '{{product.Name}}')"
              >Confirm Rental Request</a>
         </div>
+        <button class="btn-chat" 
+                onclick="initiateChat('{{product.ownerId}}', '{{product.Name}}')">
+            💬 Message Owner
+        </button>
     </div>
 </div>
+
+ <script>
+    function initiateChat(ownerId, productName){
+        if(!ownerId || ownerId === ''){
+            Swal.fire('Error', 'Owner information is missing.', 'error');
+            return;
+        }
+        window.location.href = `/chat?with=${ownerId}&item=${productName}`;
+    }
+ </script>
+
+
+
+<style>
+    .btn-chat {
+        background: #f1f5f9;
+        color: #1e293b;
+        padding: 12px 24px;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+        margin-left: 10px;
+    }
+    .btn-chat:hover {
+        background: #e2e8f0;
+        transform: translateY(-2px);
+    }
+</style>

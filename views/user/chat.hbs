@@ -1,0 +1,227 @@
+<div class="chat-wrapper">
+    <div class="inbox-panel">
+        <div class="panel-header"><h3>Chats</h3></div>
+        <div class="convo-list">
+            {{#each inbox}}
+                <a href="/chat?with={{this.partnerId}}&item={{this.itemName}}" 
+                   class="convo-card {{#if (eq ../itemName this.itemName)}}active-chat{{/if}}">
+                    <div class="avatar">{{substring this.itemName 0 1}}</div>
+                    <div class="convo-details">
+                        <p class="name">{{this.itemName}}</p>
+                        <p class="last-msg">{{this.lastMessage}}</p>
+                    </div>
+                </a>
+            {{/each}}
+        </div>
+    </div>
+
+    <div class="message-panel">
+        <div class="chat-header">
+            <h4>{{itemName}}</h4>
+        </div>
+            <div id="message-display" class="message-display">
+              {{#if messages}}
+                {{#each messages}}
+                    <div class="bubble {{#if (eq ../user._id (toString this.senderId))}}me{{else}}them{{/if}}">
+                        <div class="content">{{this.message}}</div>
+                    </div>
+                {{/each}}
+              {{else}}
+                    <div style="text-align:center; padding-top:100px; color:#65676b;">
+                       <p>Select a conversation to start chatting</p>
+                    </div>
+              {{/if}}
+         </div>
+
+        <div class="input-area">
+            <input type="text" id="msgInput" placeholder="Type a message...">
+            <button id="sendBtn">Send</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    window.recieverId = urlParams.get('with');
+    const itemContext = urlParams.get('item');
+    const currentUserId = '{{user._id}}';
+    
+    const socket = io();
+    socket.emit('join', currentUserId);
+
+    // Ensure spelling matches Backend: 'recieve-chat-message'
+    socket.on('recieve-chat-message', (data) => {
+        console.log("RECIEVED MESSAGE:", data);
+        if(data.senderId === window.recieverId && data.item === itemContext){
+            appendMessage(data.message, 'recieved');
+        } else {
+            showNotificationDot(data.item);
+        }
+        updateSidebarPreview(data.item, data.message);
+    });
+
+    function sendChatMessage() {
+        console.log("SEND CLICKED"); // DEBUG LOG
+        const input = document.getElementById('msgInput');
+        const message = input.value.trim();
+
+        if (message && window.recieverId) {
+            const payload = {
+                senderId: currentUserId,
+                recieverId: window.recieverId,
+                message: message,
+                item: itemContext
+            };
+
+            console.log("EMITTING:", payload); // DEBUG LOG
+            socket.emit('send-chat-message', payload);
+
+            appendMessage(message, 'sent');
+            updateSidebarPreview(itemContext, message);
+            
+            input.value = '';
+            scrollToBottom();
+        } else {
+            console.log("MISSING DATA:", { message, recieverId: window.recieverId });
+        }
+    }
+
+    function appendMessage(text, type) {
+        const display = document.getElementById('message-display');
+        const div = document.createElement('div');
+        const bubbleClass = (type === 'sent') ? 'me' : 'them';
+        div.className = `bubble ${bubbleClass}`; 
+        div.innerHTML = `<div class="content">${text}</div>`;
+        display.appendChild(div);
+        scrollToBottom();
+    }
+
+    function updateSidebarPreview(itemName, text) {
+        const cards = document.querySelectorAll('.convo-card');
+        cards.forEach(card => {
+            const nameElement = card.querySelector('.name');
+            if (nameElement.innerText.trim() === itemName) {
+                card.querySelector('.last-msg').innerText = text;
+                card.parentElement.prepend(card);
+            }
+        });
+    }
+
+    function showNotificationDot(itemName){
+        const cards = document.querySelectorAll('.convo-card');
+        cards.forEach(card=>{
+            const name = card.querySelector('.name').innerText;
+            if (name === itemName){
+                card.style.borderLeft = "4px solid #0084ff";
+                card.style.backgroundColor = "#f0f7ff";
+            }
+        });
+    }
+
+    function scrollToBottom() {
+        const display = document.getElementById('message-display');
+        if (display) display.scrollTop = display.scrollHeight;
+    }
+
+    document.getElementById('sendBtn').onclick = sendChatMessage;
+    document.getElementById('msgInput').onkeypress = (e) => {
+        if (e.key === 'Enter') sendChatMessage();
+    };
+
+    scrollToBottom();
+</script>
+<style>
+    /* Reset for the page container to allow full-height chat */
+    .page-container {
+        padding-top: 80px; /* Space for Nav */
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start; /* Don't center vertically */
+        background: #f0f2f5; /* Light Messenger background */
+    }
+
+    .chat-wrapper { 
+        display: flex; 
+        width: 95%; 
+        max-width: 1200px; 
+        height: 85vh; 
+        background: #fff; 
+        border-radius: 12px; 
+        box-shadow: 0 12px 28px rgba(0,0,0,0.1);
+        overflow: hidden; 
+        margin-top: 20px;
+    }
+
+    /* Left Sidebar */
+    .inbox-panel { 
+        width: 350px; 
+        border-right: 1px solid #e5e5e5; 
+        display: flex; 
+        flex-direction: column;
+    }
+    .panel-header { padding: 20px; border-bottom: 1px solid #e5e5e5; }
+    .convo-list { flex: 1; overflow-y: auto; }
+    
+    .convo-card {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        text-decoration: none;
+        color: black;
+        transition: 0.2s;
+        gap: 12px;
+    }
+    .convo-card:hover { background: #f5f5f5; }
+    .avatar {
+        width: 50px; height: 50px; background: #0084ff; color: white;
+        border-radius: 50%; display: flex; justify-content: center; align-items: center;
+        font-weight: bold; font-size: 1.2rem;
+    }
+    .name { font-weight: 600; margin: 0; }
+    .last-msg { font-size: 0.85rem; color: #65676b; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Right Message Panel */
+    .message-panel { flex: 1; display: flex; flex-direction: column; background: #fff; }
+    .chat-header { padding: 15px 20px; border-bottom: 1px solid #e5e5e5; font-weight: bold; }
+    
+    .message-display { 
+        flex: 1; 
+        padding: 20px; 
+        overflow-y: auto; 
+        display: flex; 
+        flex-direction: column; 
+        gap: 8px; 
+    }
+    
+    /* BUBBLES - Making sure these match your JS */
+    .bubble { 
+        max-width: 70%; 
+        padding: 10px 16px; 
+        border-radius: 18px; 
+        font-size: 0.95rem; 
+        word-wrap: break-word; 
+    }
+    
+    .bubble.me { 
+        align-self: flex-end; 
+        background-color: #0084ff; 
+        color: white; 
+    }
+    
+    .bubble.them { 
+        align-self: flex-start; 
+        background-color: #e4e6eb; 
+        color: black; 
+    }
+
+    .input-area { padding: 20px; display: flex; gap: 10px; align-items: center; }
+    #msgInput { 
+        flex: 1; padding: 12px 18px; border-radius: 25px; 
+        border: 1px solid #ddd; background: #f0f2f5; outline: none; 
+    }
+    #sendBtn { 
+        background: #0084ff; color: white; border: none; 
+        padding: 10px 20px; border-radius: 12px; font-weight: bold; cursor: pointer; 
+    }
+</style>

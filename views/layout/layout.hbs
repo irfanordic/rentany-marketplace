@@ -4,11 +4,15 @@
     <title>Circular Community</title>
     <style></style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/socket.io/socket.io.js"></script>
   </head>
   <body>
-    {{{body}}}
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="/socket.io/socket.io.js"></script>
+    {{> user-header}}
+    <main class="page-container">
+            {{{body}}}
+        </main>
+    
+    
     
     <script>
         // Initialize socket
@@ -65,3 +69,22 @@
     </script>
      </body>
 </html>
+<style>
+    /* This prevents the body from centering the NAV along with the content */
+    body {
+        display: block !important; /* Overrides the flex centering on body */
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
+    
+    /* This container handles the centering of your cards instead of the body */
+    .page-container {
+        padding-top: 100px; /* Space for the navbar */
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column; /* Stack things vertically */
+    }
+</style>
